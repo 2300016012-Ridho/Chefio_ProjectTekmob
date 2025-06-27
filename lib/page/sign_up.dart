@@ -1,5 +1,7 @@
+// sign_up.dart - Updated dengan Supabase Authentication
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -13,6 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   bool _isPasswordVisible = false;
   bool _isLoading = false;
@@ -29,17 +32,80 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // --- SIMULASI PROSES SIGN UP ---
-      await Future.delayed(const Duration(seconds: 2));
-      // -----------------------------
+      try {
+        final response = await _authService.signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          fullName: _nameController.text.trim(),
+        );
 
-      setState(() => _isLoading = false);
-      
-      if (mounted) {
-        // PERUBAHAN DI SINI: Navigasi ke halaman sukses
-        Navigator.pushNamedAndRemoveUntil(context, '/success', (route) => false);
+        if (response.user != null) {
+          if (mounted) {
+            // Show confirmation dialog
+            _showConfirmationDialog();
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          _showErrorDialog(e.toString());
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Check Your Email'),
+        content: Text(
+          'We\'ve sent a confirmation link to ${_emailController.text}. Please check your email and click the link to verify your account.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pushNamedAndRemoveUntil(context, '/signin', (route) => false);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Up Failed'),
+        content: Text(_getErrorMessage(message)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getErrorMessage(String error) {
+    if (error.contains('User already registered')) {
+      return 'This email is already registered. Please use a different email or sign in.';
+    } else if (error.contains('Password should be at least 6 characters')) {
+      return 'Password must be at least 6 characters long.';
+    } else if (error.contains('Invalid email')) {
+      return 'Please enter a valid email address.';
+    } else if (error.contains('network')) {
+      return 'Network error. Please check your connection.';
+    }
+    return 'An error occurred. Please try again.';
   }
 
   @override
@@ -94,6 +160,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your name';
+                  }
+                  if (value.length < 2) {
+                    return 'Name must be at least 2 characters long';
                   }
                   return null;
                 },

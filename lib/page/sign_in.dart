@@ -1,4 +1,7 @@
+// sign_in.dart - Updated dengan Supabase Authentication
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
+import 'forgot_password.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -11,6 +14,7 @@ class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
   
   bool _isPasswordVisible = false;
   bool _isLoading = false;
@@ -28,17 +32,56 @@ class _SignInPageState extends State<SignInPage> {
         _isLoading = true;
       });
 
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        final response = await _authService.signIn(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
 
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (mounted) {
-          // PERUBAHAN DI SINI: Navigasi ke halaman sukses
-          Navigator.pushNamedAndRemoveUntil(context, '/success', (route) => false);
+        if (response.user != null) {
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(context, '/success', (route) => false);
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          _showErrorDialog(e.toString());
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign In Failed'),
+        content: Text(_getErrorMessage(message)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getErrorMessage(String error) {
+    if (error.contains('Invalid login credentials')) {
+      return 'Invalid email or password. Please try again.';
+    } else if (error.contains('Email not confirmed')) {
+      return 'Please check your email and confirm your account.';
+    } else if (error.contains('network')) {
+      return 'Network error. Please check your connection.';
+    }
+    return 'An error occurred. Please try again.';
   }
 
   @override
@@ -95,7 +138,12 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   const Text('Password', style: TextStyle(fontFamily: 'Poppins', fontSize: 14, fontWeight: FontWeight.w600)),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                      );
+                    },
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     child: const Text('Forgot Password?', style: TextStyle(fontFamily: 'Poppins', color: primaryColor, fontWeight: FontWeight.w600)),
                   ),
