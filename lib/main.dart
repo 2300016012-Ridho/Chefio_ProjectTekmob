@@ -1,11 +1,17 @@
-// main.dart - Updated dengan Auth Check dan Route Management
+
 import 'package:flutter/material.dart';
+
+// Import semua halaman yang Anda butuhkan
 import 'package:chefio/page/GetStarted.dart';
 import 'package:chefio/page/Homepage.dart';
 import 'package:chefio/page/sign_in.dart';
 import 'package:chefio/page/sign_up.dart';
 import 'package:chefio/page/SuccessfulPage.dart';
 import 'package:chefio/page/forgot_password.dart';
+import 'package:chefio/page/breakfast_page.dart';
+import 'package:chefio/page/lunch_dinner_page.dart';
+import 'package:chefio/page/milkshake_page.dart';
+import 'package:chefio/page/dessert_page.dart';
 import 'package:chefio/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,6 +39,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.pink,
       ),
       home: const AuthWrapper(),
+      // Ini adalah buku catatan Si Manajer Proyek
       routes: {
         '/getstarted': (context) => const GetStarted(),
         '/signin': (context) => const SignInPage(),
@@ -41,11 +48,17 @@ class MyApp extends StatelessWidget {
         '/success': (context) => const SuccessfulPage(),
         '/home': (context) => const HomePage(initialIndex: 0),
         '/profile': (context) => const HomePage(initialIndex: 2),
+        // Baris ini sekarang PASTI BENAR karena main.dart sudah "kenal" dengan BreakfastPage
+        '/breakfast': (context) => const BreakfastPage(), 
+        '/milkshake': (context) => const MilkshakePage(),
+        '/dessert': (context) => const DessertPage(),
+        '/lunch': (context) => const LunchDinnerPage()
       },
     );
   }
 }
 
+// Class AuthWrapper tidak perlu diubah, sudah bagus.
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({Key? key}) : super(key: key);
 
@@ -65,7 +78,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   void _checkAuthState() {
-    // Check if user is already logged in
     setState(() {
       _isLoading = false;
     });
@@ -74,9 +86,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void _listenToAuthChanges() {
     _authService.authStateChanges.listen((data) {
       if (mounted) {
-        setState(() {
-          // Trigger rebuild when auth state changes
-        });
+        setState(() {});
       }
     });
   }
@@ -93,14 +103,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
       );
     }
 
-    // Check if user is logged in
     final user = _authService.currentUser;
     
     if (user != null) {
-      // User is logged in, show home page
       return const HomePage(initialIndex: 0);
     } else {
-      // User is not logged in, show get started page
       return const GetStarted();
     }
   }

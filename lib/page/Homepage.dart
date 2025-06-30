@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chefio/page/profilepage.dart';
 
+// Tidak ada perubahan di sini
 class HomePage extends StatefulWidget {
   final int initialIndex;
 
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+// Tidak ada perubahan di sini
 class _HomePageState extends State<HomePage> {
   late int _selectedIndex;
 
@@ -84,6 +86,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// Tidak ada perubahan di sini
 class HomeContent extends StatelessWidget {
   const HomeContent({Key? key}) : super(key: key);
 
@@ -168,12 +171,15 @@ class HomeContent extends StatelessWidget {
     );
   }
 
+
   Widget _buildCategoryGrid(BuildContext context) {
     final categories = [
-      {'title': 'Breakfast', 'imagePath': 'images/breakfast.png'},
-      {'title': 'Milkshake', 'imagePath': 'images/milkshake.png'},
-      {'title': 'Lunch & Dinner', 'imagePath': 'images/lunch_dinner.png'},
-      {'title': 'Dessert', 'imagePath': 'images/dessert.png'},
+      {'title': 'Breakfast', 'imagePath': 'images/breakfast.png', 'route': '/breakfast'},
+      {'title': 'Milkshake', 'imagePath': 'images/milkshake.png', 'route': '/milkshake'},
+      // Untuk kategori yang belum siap, kita bisa hapus rutenya atau biarkan null
+      {'title': 'Lunch & Dinner', 'imagePath': 'images/lunch_dinner.png', 'route': '/lunch'},
+      // Mengubah 'route' dari null menjadi '/dessert'
+      {'title': 'Dessert', 'imagePath': 'images/dessert.png', 'route': '/dessert'},
     ];
 
     return GridView.builder(
@@ -187,16 +193,30 @@ class HomeContent extends StatelessWidget {
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
+        final category = categories[index];
+        final route = category['route'];
+
         return CategoryCard(
-          title: categories[index]['title']!,
-          imagePath: categories[index]['imagePath']!,
-          onTap: () {},
+          title: category['title']!,
+          imagePath: category['imagePath']!,
+          onTap: () {
+            if (route != null) {
+              Navigator.pushNamed(context, route);
+            } else {
+              print("Navigasi ke ${category['title']} belum diimplementasikan.");
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("${category['title']} page is under construction."))
+              );
+            }
+          },
         );
       },
     );
   }
 }
 
+
+// Tidak ada perubahan di sini
 class CategoryCard extends StatelessWidget {
   final String title;
   final String imagePath;
