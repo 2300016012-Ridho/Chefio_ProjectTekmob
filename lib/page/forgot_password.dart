@@ -1,4 +1,4 @@
-// lib/pages/forgot_password.dart
+// lib/pages/forgot_password.dart - Fixed method call
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
@@ -30,6 +30,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       });
 
       try {
+        // Fixed: Use named parameter
         await _authService.resetPassword(email: _emailController.text.trim());
         
         if (mounted) {
@@ -225,8 +226,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   'Sign In',
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    color: Colors.white
-                    
+                    color: Color(0xFFE91E63), // Fixed: Changed from Colors.white to primary color
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

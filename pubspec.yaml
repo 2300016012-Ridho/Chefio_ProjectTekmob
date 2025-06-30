@@ -23,6 +23,11 @@ dependencies:
   # [DITAMBAHKAN] Untuk memilih gambar dari galeri atau kamera
   image_picker: ^1.1.2 
 
+   # Permission handler for camera/gallery access
+  permission_handler: ^11.3.0
+  # HTTP for network requests (if needed)
+  http: ^1.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
