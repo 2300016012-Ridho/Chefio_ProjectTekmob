@@ -21,6 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isLoading = false;
 
   @override
+
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
