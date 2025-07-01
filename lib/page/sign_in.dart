@@ -1,4 +1,5 @@
-// sign_in.dart - Updated dengan Supabase Authentication
+// page/sign_in.dart
+
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'forgot_password.dart';
@@ -27,33 +28,23 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _signIn() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() => _isLoading = true);
 
-      try {
-        final response = await _authService.signIn(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    try {
+      final response = await _authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-        if (response.user != null) {
-          if (mounted) {
-            Navigator.pushNamedAndRemoveUntil(context, '/success', (route) => false);
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          _showErrorDialog(e.toString());
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      if (mounted && response.user != null) {
+        Navigator.pushNamedAndRemoveUntil(context, '/success', (route) => false);
       }
+    } catch (e) {
+      if (mounted) _showErrorDialog(e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -78,181 +69,125 @@ class _SignInPageState extends State<SignInPage> {
       return 'Invalid email or password. Please try again.';
     } else if (error.contains('Email not confirmed')) {
       return 'Please check your email and confirm your account.';
-    } else if (error.contains('network')) {
-      return 'Network error. Please check your connection.';
     }
     return 'An error occurred. Please try again.';
   }
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFFE91E63);
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
+      appBar: AppBar(), // AppBar kosong agar tombol back muncul otomatis
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                'Welcome to CHEFIO',
-                style: TextStyle(fontFamily: 'Poppins', fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Please enter your details to login',
-                style: TextStyle(fontFamily: 'Poppins', fontSize: 16, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 48),
-              const Text('Email', style: TextStyle(fontFamily: 'Poppins', fontSize: 14, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: _buildInputDecoration(hintText: 'Enter your email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Password', style: TextStyle(fontFamily: 'Poppins', fontSize: 14, fontWeight: FontWeight.w600)),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                      );
-                    },
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    child: const Text('Forgot Password?', style: TextStyle(fontFamily: 'Poppins', color: primaryColor, fontWeight: FontWeight.w600)),
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              'Welcome to CHEFIO',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please enter your details to login',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 48),
+            const Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: _buildInputDecoration(context, hintText: 'Enter your email'),
+              validator: (value) {
+                if (value == null || !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible,
-                decoration: _buildInputDecoration(
-                  hintText: 'Enter your password',
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
+                  child: const Text('Forgot Password?', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _signIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 2,
-                    shadowColor: primaryColor.withOpacity(0.4),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
-                          ),
-                        )
-                      : const Text(
-                          'SIGN IN',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible,
+              decoration: _buildInputDecoration(
+                context,
+                hintText: 'Enter your password',
+                suffixIcon: IconButton(
+                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+                  onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                 ),
               ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Don't have an account? ", style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade700)),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/signup');
-                    },
-                    child: const Text('Sign Up', style: TextStyle(fontFamily: 'Poppins', color: primaryColor, fontWeight: FontWeight.bold)),
-                  ),
-                ],
+              validator: (value) {
+                if (value == null || value.length < 6) {
+                  return 'Password must be at least 6 characters long';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _signIn,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+              child: _isLoading
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                  : const Text('SIGN IN', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account? ", style: TextStyle(color: Colors.grey.shade700)),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/signup'),
+                  child: Text('Sign Up', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
   }
 
-  InputDecoration _buildInputDecoration({required String hintText, Widget? suffixIcon}) {
-    const Color primaryColor = Color(0xFFE91E63);
+  InputDecoration _buildInputDecoration(BuildContext context, {required String hintText, Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Poppins'),
+      hintStyle: TextStyle(color: Colors.grey.shade400),
+      filled: true,
+      fillColor: Theme.of(context).cardColor,
+      suffixIcon: suffixIcon,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
       ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red, width: 2),
-      ),
-      suffixIcon: suffixIcon,
     );
   }
 }

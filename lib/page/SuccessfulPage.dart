@@ -7,75 +7,100 @@ class SuccessfulPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFFE91E63);
 
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: const BoxDecoration(
-                  color: primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 40,
-                ),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                '🎉 Welcome to Chefio! 🎉',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'You have successfully logged in! Welcome back to Chefio. Now, you’re all set to explore, discover, and create delicious recipes.\nLet’s get cooking!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 48),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Go to Home',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+
+          Positioned(
+            top: screenHeight * 0.05,
+            left: -screenWidth * 0.1,
+            child: Image.asset('images/cake_3.png', width: screenWidth * 0.5),
           ),
-        ),
+
+          Positioned(
+            top: -screenHeight * 0.02,
+            right: -screenWidth * 0.15,
+            child: Image.asset('images/cake_4.png', width: screenWidth * 0.65),
+          ),
+
+          Positioned(
+            bottom: screenHeight * 0.18,
+            left: screenWidth * 0.05,
+            child: Image.asset('images/cake_5.png', width: screenWidth * 0.35),
+          ),
+
+          Positioned(
+            bottom: screenHeight * 0.15,
+            right: -screenWidth * 0.08,
+            child: Image.asset('images/cake_2.png', width: screenWidth * 0.45),
+          ),
+
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // --- Teks-teks ---
+                  const Text(
+                    'Welcome to Chefio!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Get ready to explore delicious recipes from around!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      color: Colors.grey.shade700,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                        shadowColor: primaryColor.withOpacity(0.4),
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
