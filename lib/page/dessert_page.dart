@@ -1,17 +1,15 @@
-// lib/page/dessert_page.dart
+// page/dessert_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/page/recipe_detail_page.dart';
 
-// =======================================================
-// LANGKAH 1: Siapkan data lengkap untuk resep ini
-// =======================================================
 final Recipe chocoLavaCakeRecipe = Recipe(
   title: 'Chocolate Lava Cake',
-  description: 'Chocolate Lava Cake adalah dessert lembut dengan bagian luar kue yang matang sempurna dan bagian dalam yang masih lumer seperti lava cokelat panas.',
-  imageUrl: 'images/lava_cake.png', // <-- Ganti dengan nama file gambar Anda
-  cookingTime: '±20 menit',
+  description: 'Dessert lembut dengan bagian luar kue yang matang sempurna dan bagian dalam yang masih lumer seperti lava cokelat panas.',
+  imageUrl: 'images/lava_cake.png',
+  cookingTime: '20 menit',
+  category: 'Dessert', // <-- Disesuaikan dengan model baru
   ingredients: [
     '100gr dark chocolate',
     '100gr butter',
@@ -20,7 +18,7 @@ final Recipe chocoLavaCakeRecipe = Recipe(
     '50gr gula halus',
     '1/2 sdt vanila ekstrak (opsional)',
     '30gr tepung terigu (ayak)',
-    'Margarin dan sedikit tepung untuk melapisi cetakan (ramekin)'
+    'Margarin dan sedikit tepung untuk melapisi cetakan'
   ],
   steps: [
     'Panaskan oven ke 200°C.',
@@ -41,48 +39,22 @@ class DessertPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: const Text('Dessert', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSearchBar(),
-              const SizedBox(height: 24),
-              const Center(
-                child: Text(
-                  'DESSERT',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Menampilkan kartu resep
-              _buildRecipeCard(
-                context: context,
-                recipe: chocoLavaCakeRecipe, // <-- Kirim semua data resep lava cake
-              ),
-            ],
+      body: ListView(
+        padding: const EdgeInsets.all(24.0),
+        children: [
+          _buildRecipeCard(
+            context: context,
+            recipe: chocoLavaCakeRecipe,
           ),
-        ),
+        ],
       ),
     );
   }
 
-  // Widget ini sama persis seperti yang lain
   Widget _buildRecipeCard({
     required BuildContext context,
     required Recipe recipe,
@@ -96,77 +68,67 @@ class DessertPage extends StatelessWidget {
           ),
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 24.0),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
               child: Image.asset(
                 recipe.imageUrl,
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 180,
-                  color: Colors.grey.shade200,
-                  child: const Center(child: Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 50)),
-                ),
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              recipe.title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    recipe.description,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    recipe.title,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Icon(Icons.access_time_outlined, size: 16, color: Colors.grey.shade700),
-                const SizedBox(width: 4),
-                Text(
-                  recipe.cookingTime,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(width: 12),
-                Icon(Icons.bookmark_border, size: 22, color: Colors.grey.shade800),
-              ],
-            )
+                  const SizedBox(height: 8),
+                  Text(
+                    recipe.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time_outlined,
+                          size: 18, 
+                          color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        recipe.cookingTime,
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      const Spacer(),
+                      Icon(Icons.bookmark_border,
+                          size: 24, color: Colors.grey.shade500),
+                    ],
+                  )
+                ],
+              ),
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Widget SearchBar juga sama, tidak perlu diubah
-  Widget _buildSearchBar() {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: 'Cari Menu',
-        hintStyle: TextStyle(color: Colors.grey.shade500),
-        prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
-        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
         ),
       ),
     );
