@@ -16,18 +16,45 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); 
-    final Color primaryColor = theme.colorScheme.primary; 
+    final theme = Theme.of(context);
     final Color onSurfaceColor = theme.colorScheme.onSurface;
-    final Color surfaceColor = theme.colorScheme.surface;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor, 
+      // PENTING: extendBodyBehindAppBar membuat body bisa digambar di belakang AppBar
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        // AppBar dibuat transparan
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: theme.cardColor.withOpacity(0.8),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: theme.cardColor.withOpacity(0.8),
+              child: IconButton(
+                icon: Icon(Icons.bookmark_border, color: theme.iconTheme.color),
+                onPressed: () { /* Aksi simpan resep */ },
+              ),
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildImageAndTopBar(context),
+            // Widget gambar tidak perlu lagi ada tombol di dalamnya
+            _buildImage(context),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -35,28 +62,27 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                 children: [
                   Text(
                     widget.recipe.title,
-                    // Gunakan textTheme dari tema
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: onSurfaceColor, 
+                      color: onSurfaceColor,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.recipe.description,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: onSurfaceColor.withOpacity(0.7), 
+                      color: onSurfaceColor.withOpacity(0.7),
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
                   _buildCookingTime(context),
                   const SizedBox(height: 24),
-                  _buildToggleButtons(context), 
+                  _buildToggleButtons(context),
                   const SizedBox(height: 24),
                   _isShowingIngredients
-                      ? _buildNumberedList(widget.recipe.ingredients, context) 
-                      : _buildNumberedList(widget.recipe.steps, context), 
+                      ? _buildNumberedList(widget.recipe.ingredients, context)
+                      : _buildNumberedList(widget.recipe.steps, context),
                 ],
               ),
             ),
@@ -66,58 +92,42 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  Widget _buildImageAndTopBar(BuildContext context) {
+  // Widget ini sekarang hanya menampilkan gambar
+  Widget _buildImage(BuildContext context) {
     final theme = Theme.of(context);
-    return Stack(
-      children: [
-        Image.network(
-          widget.recipe.imageUrl,
-          width: double.infinity,
-          height: 300,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            height: 300,
-            color: theme.colorScheme.surface, 
-            child: Icon(Icons.image_not_supported_outlined, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 60),
-          ),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              height: 300,
-              color: theme.colorScheme.surface, 
-              child: Center(child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary), 
-              )),
-            );
-          },
-        ),
-        Positioned(
-          top: 50,
-          left: 16,
-          child: CircleAvatar(
-            backgroundColor: theme.cardColor.withOpacity(0.8), 
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: theme.iconTheme.color), 
-              onPressed: () => Navigator.of(context).pop(),
+    // Cek apakah imageUrl berasal dari internet atau asset lokal
+    final isNetworkImage = widget.recipe.imageUrl.startsWith('http');
+
+    return isNetworkImage
+        ? Image.network(
+            widget.recipe.imageUrl,
+            width: double.infinity,
+            height: 350, // Sedikit lebih tinggi agar ada ruang untuk AppBar
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              height: 350,
+              color: theme.colorScheme.surface,
+              child: Icon(Icons.image_not_supported_outlined, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 60),
             ),
-          ),
-        ),
-        Positioned(
-          top: 50,
-          right: 16,
-          child: CircleAvatar(
-            backgroundColor: theme.cardColor.withOpacity(0.8), 
-            child: IconButton(
-              icon: Icon(Icons.bookmark_border, color: theme.iconTheme.color), 
-              onPressed: () { /* Aksi simpan resep */ },
-            ),
-          ),
-        ),
-      ],
-    );
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                height: 350,
+                color: theme.colorScheme.surface,
+                child: Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary))),
+              );
+            },
+          )
+        : Image.asset( // Fallback untuk gambar lokal
+            widget.recipe.imageUrl,
+            width: double.infinity,
+            height: 350,
+            fit: BoxFit.cover,
+          );
   }
 
-  // Menerima BuildContext sebagai argumen
+  // Widget-widget lain tidak perlu diubah, salin saja dari kode lama Anda.
+  // ... (salin _buildCookingTime, _buildToggleButtons, _buildNumberedList dari kode lama Anda)
   Widget _buildCookingTime(BuildContext context) {
     final theme = Theme.of(context);
     final Color onSurfaceColor = theme.colorScheme.onSurface;
@@ -164,7 +174,6 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  // Menerima BuildContext sebagai argumen
   Widget _buildToggleButtons(BuildContext context) {
     final theme = Theme.of(context);
     final Color activeColor = theme.colorScheme.primary;
@@ -218,7 +227,6 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  // Menerima BuildContext sebagai argumen
   Widget _buildNumberedList(List<String> items, BuildContext context) {
     final theme = Theme.of(context);
     final Color primaryColor = theme.colorScheme.primary;
