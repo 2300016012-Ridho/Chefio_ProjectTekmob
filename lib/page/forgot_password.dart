@@ -1,4 +1,4 @@
-// lib/pages/forgot_password.dart - Fixed method call
+// lib/page/forgot_password.dart
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
@@ -13,7 +13,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final AuthService _authService = AuthService();
-  
+
   bool _isLoading = false;
   bool _emailSent = false;
 
@@ -25,18 +25,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void _resetPassword() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
+      setState(() => _isLoading = true);
       try {
-        // Fixed: Use named parameter
         await _authService.resetPassword(email: _emailController.text.trim());
-        
         if (mounted) {
-          setState(() {
-            _emailSent = true;
-          });
+          setState(() => _emailSent = true);
         }
       } catch (e) {
         if (mounted) {
@@ -44,9 +37,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         }
       } finally {
         if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
+          setState(() => _isLoading = false);
         }
       }
     }
@@ -79,26 +70,24 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFFE91E63);
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: _emailSent ? _buildSuccessView() : _buildFormView(primaryColor),
+        child: _emailSent ? _buildSuccessView() : _buildFormView(),
       ),
     );
   }
 
-  Widget _buildFormView(Color primaryColor) {
+  Widget _buildFormView() {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -119,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 16,
-              color: Colors.grey.shade600,
+              color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
               height: 1.5,
             ),
           ),
@@ -139,35 +128,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             decoration: InputDecoration(
               hintText: 'Enter your email',
               hintStyle: TextStyle(
-                color: Colors.grey.shade400,
+                color: theme.hintColor,
                 fontFamily: 'Poppins',
               ),
+              filled: true,
+              fillColor: theme.cardColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
               ),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+              if (value == null || !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                 return 'Please enter a valid email address';
               }
               return null;
@@ -180,6 +160,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               onPressed: _isLoading ? null : _resetPassword,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -215,18 +196,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 "Remember your password? ",
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  color: Colors.grey.shade700,
+                  color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
+                onTap: () => Navigator.pop(context),
+                child: Text(
                   'Sign In',
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    color: Color(0xFFE91E63), // Fixed: Changed from Colors.white to primary color
+                    color: primaryColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -239,8 +218,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Widget _buildSuccessView() {
-    const Color primaryColor = Color(0xFFE91E63);
-    
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -248,7 +228,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Container(
           width: 72,
           height: 72,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: primaryColor,
             shape: BoxShape.circle,
           ),
@@ -266,7 +246,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             fontFamily: 'Poppins',
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
         const SizedBox(height: 16),
@@ -276,17 +255,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 16,
-            color: Colors.grey.shade600,
+            color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
             height: 1.5,
           ),
         ),
         const SizedBox(height: 48),
         ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -310,7 +288,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               _emailController.clear();
             });
           },
-          child: const Text(
+          child: Text(
             'Resend Email',
             style: TextStyle(
               fontFamily: 'Poppins',

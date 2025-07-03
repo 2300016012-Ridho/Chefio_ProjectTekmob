@@ -1,7 +1,8 @@
-// page/Homepage.dart
-
+// lib/page/Homepage.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:chefio/page/profilepage.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -56,37 +57,107 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({Key? key}) : super(key: key);
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  final PageController _pageController = PageController();
+  Timer? _timer;
+
+  final List<String> _imagePaths = [
+    'images/home_preview.png',
+    'images/home_preview_2.png',
+    'images/home_preview_3.png',
+    'images/home_preview_4.png',
+    'images/home_preview_5.png',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoScroll();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted) return;
+      int nextPage = _pageController.page!.round() + 1;
+      if (nextPage >= _imagePaths.length) {
+        nextPage = 0;
+      }
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: TextField(
-          decoration: InputDecoration(
-            hintText: 'What are you cooking today?',
-            prefixIcon: const Icon(Icons.search),
-            filled: true,
-            fillColor: Theme.of(context).scaffoldBackgroundColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          ),
-        ),
+        title: const Text('Categories', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset('images/home_preview.png', height: 180, fit: BoxFit.cover),
-          ),
-          const SizedBox(height: 24),
-          Text('Categories', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
+          _buildImageSlider(),
+          const SizedBox(height: 32),
           _buildCategoryGrid(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageSlider() {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        SizedBox(
+          height: 180,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _imagePaths.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    _imagePaths[index],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+        SmoothPageIndicator(
+          controller: _pageController,
+          count: _imagePaths.length,
+          effect: WormEffect(
+            dotHeight: 8,
+            dotWidth: 8,
+            activeDotColor: theme.colorScheme.primary,
+            dotColor: theme.disabledColor,
+          ),
+        ),
+      ],
     );
   }
 
@@ -124,45 +195,77 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends StatefulWidget {
   final String title;
   final String imagePath;
   final VoidCallback onTap;
 
-  const CategoryCard({Key? key, required this.title, required this.imagePath, required this.onTap}) : super(key: key);
+  const CategoryCard({
+    Key? key,
+    required this.title,
+    required this.imagePath,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  State<CategoryCard> createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
+  bool _isHovered = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.asset(imagePath, fit: BoxFit.cover),
+    final bool isInteracting = _isHovered || _isPressed;
+    final theme = Theme.of(context);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedScale(
+        scale: isInteracting ? 1.05 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: isInteracting
+                    ? theme.shadowColor.withOpacity(0.15)
+                    : theme.shadowColor.withOpacity(0.08),
+                blurRadius: isInteracting ? 15 : 10,
+                offset: isInteracting ? const Offset(0, 8) : const Offset(0, 5),
+              )
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: widget.onTap,
+              onTapDown: (_) => setState(() => _isPressed = true),
+              onTapUp: (_) => setState(() => _isPressed = false),
+              onTapCancel: () => setState(() => _isPressed = false),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Image.asset(widget.imagePath, fit: BoxFit.cover),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      widget.title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ],
+          ),
         ),
       ),
     );
