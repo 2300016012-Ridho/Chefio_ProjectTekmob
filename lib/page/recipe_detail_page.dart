@@ -56,7 +56,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   Widget _buildImageAndTopBar(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
+        // GANTI BAGIAN INI
+        Image.network(
           widget.recipe.imageUrl,
           width: double.infinity,
           height: 300,
@@ -66,14 +67,23 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             color: Colors.grey.shade200,
             child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 60),
           ),
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              height: 300,
+              color: Colors.grey.shade200,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          },
         ),
+        // BAGIAN INI TETAP SAMA
         Positioned(
           top: 50,
           left: 16,
           child: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.8),
+            backgroundColor: Theme.of(context).cardColor.withOpacity(0.8),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -82,9 +92,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           top: 50,
           right: 16,
           child: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.8),
+            backgroundColor: Theme.of(context).cardColor.withOpacity(0.8),
             child: IconButton(
-              icon: const Icon(Icons.bookmark_border, color: Colors.black),
+              icon: Icon(Icons.bookmark_border, color: Theme.of(context).iconTheme.color),
               onPressed: () { /* Aksi simpan resep */ },
             ),
           ),
@@ -92,6 +102,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
       ],
     );
   }
+//
 
   Widget _buildCookingTime() {
     return Container(
