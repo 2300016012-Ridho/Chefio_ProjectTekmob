@@ -1,3 +1,4 @@
+// lib/page/recipe_detail_page.dart
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 
@@ -15,8 +16,13 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); 
+    final Color primaryColor = theme.colorScheme.primary; 
+    final Color onSurfaceColor = theme.colorScheme.onSurface;
+    final Color surfaceColor = theme.colorScheme.surface;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor, 
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,21 +35,28 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                 children: [
                   Text(
                     widget.recipe.title,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    // Gunakan textTheme dari tema
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: onSurfaceColor, 
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.recipe.description,
-                    style: TextStyle(color: Colors.grey.shade700, fontSize: 16, height: 1.5),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: onSurfaceColor.withOpacity(0.7), 
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  _buildCookingTime(),
+                  _buildCookingTime(context),
                   const SizedBox(height: 24),
-                  _buildToggleButtons(),
+                  _buildToggleButtons(context), 
                   const SizedBox(height: 24),
                   _isShowingIngredients
-                      ? _buildNumberedList(widget.recipe.ingredients)
-                      : _buildNumberedList(widget.recipe.steps),
+                      ? _buildNumberedList(widget.recipe.ingredients, context) 
+                      : _buildNumberedList(widget.recipe.steps, context), 
                 ],
               ),
             ),
@@ -54,26 +67,37 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   }
 
   Widget _buildImageAndTopBar(BuildContext context) {
+    final theme = Theme.of(context);
     return Stack(
       children: [
-        Image.asset(
+        Image.network(
           widget.recipe.imageUrl,
           width: double.infinity,
           height: 300,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
             height: 300,
-            color: Colors.grey.shade200,
-            child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 60),
+            color: theme.colorScheme.surface, 
+            child: Icon(Icons.image_not_supported_outlined, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 60),
           ),
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              height: 300,
+              color: theme.colorScheme.surface, 
+              child: Center(child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary), 
+              )),
+            );
+          },
         ),
         Positioned(
           top: 50,
           left: 16,
           child: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.8),
+            backgroundColor: theme.cardColor.withOpacity(0.8), 
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: Icon(Icons.arrow_back, color: theme.iconTheme.color), 
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -82,9 +106,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           top: 50,
           right: 16,
           child: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.8),
+            backgroundColor: theme.cardColor.withOpacity(0.8), 
             child: IconButton(
-              icon: const Icon(Icons.bookmark_border, color: Colors.black),
+              icon: Icon(Icons.bookmark_border, color: theme.iconTheme.color), 
               onPressed: () { /* Aksi simpan resep */ },
             ),
           ),
@@ -93,15 +117,19 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  Widget _buildCookingTime() {
+  // Menerima BuildContext sebagai argumen
+  Widget _buildCookingTime(BuildContext context) {
+    final theme = Theme.of(context);
+    final Color onSurfaceColor = theme.colorScheme.onSurface;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor, 
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
+            color: theme.shadowColor.withOpacity(0.15), 
             spreadRadius: 1,
             blurRadius: 10,
             offset: const Offset(0, 3),
@@ -111,13 +139,24 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.access_time_outlined, color: Colors.grey, size: 20),
+          Icon(Icons.access_time_outlined, color: onSurfaceColor.withOpacity(0.7), size: 20), 
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Cooking time', style: TextStyle(color: Colors.grey, fontSize: 12)),
-              Text(widget.recipe.cookingTime, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                'Cooking time',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: onSurfaceColor.withOpacity(0.7), 
+                ),
+              ),
+              Text(
+                widget.recipe.cookingTime,
+                style: theme.textTheme.titleSmall?.copyWith( 
+                  fontWeight: FontWeight.bold,
+                  color: onSurfaceColor, 
+                ),
+              ),
             ],
           )
         ],
@@ -125,9 +164,12 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  Widget _buildToggleButtons() {
-    const Color activeColor = Color(0xFFE91E63);
-    const Color inactiveColor = Colors.white;
+  // Menerima BuildContext sebagai argumen
+  Widget _buildToggleButtons(BuildContext context) {
+    final theme = Theme.of(context);
+    final Color activeColor = theme.colorScheme.primary;
+    final Color inactiveColor = theme.cardColor;
+    final Color onInactiveColor = theme.colorScheme.onSurface; 
 
     return Row(
       children: [
@@ -140,15 +182,15 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _isShowingIngredients ? activeColor : inactiveColor,
-              foregroundColor: _isShowingIngredients ? inactiveColor : activeColor,
+              foregroundColor: _isShowingIngredients ? theme.colorScheme.onPrimary : onInactiveColor, 
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: activeColor),
+                side: BorderSide(color: activeColor), 
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
               elevation: _isShowingIngredients ? 4 : 0,
             ),
-            child: const Text('Ingredient', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text('Ingredient', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)), 
           ),
         ),
         const SizedBox(width: 16),
@@ -161,22 +203,27 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: !_isShowingIngredients ? activeColor : inactiveColor,
-              foregroundColor: !_isShowingIngredients ? inactiveColor : activeColor,
+              foregroundColor: !_isShowingIngredients ? theme.colorScheme.onPrimary : onInactiveColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: activeColor),
+                side: BorderSide(color: activeColor), 
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
               elevation: !_isShowingIngredients ? 4 : 0,
             ),
-            child: const Text('Steps', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text('Steps', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)), 
           ),
         ),
       ],
     );
   }
 
-  Widget _buildNumberedList(List<String> items) {
+  // Menerima BuildContext sebagai argumen
+  Widget _buildNumberedList(List<String> items, BuildContext context) {
+    final theme = Theme.of(context);
+    final Color primaryColor = theme.colorScheme.primary;
+    final Color onSurfaceColor = theme.colorScheme.onSurface;
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -189,11 +236,11 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             children: [
               CircleAvatar(
                 radius: 14,
-                backgroundColor: const Color(0xFFE91E63).withOpacity(0.1),
+                backgroundColor: primaryColor.withOpacity(0.1),
                 child: Text(
                   '${index + 1}',
-                  style: const TextStyle(
-                    color: Color(0xFFE91E63),
+                  style: theme.textTheme.bodySmall?.copyWith( 
+                    color: primaryColor, 
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -202,7 +249,12 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(items[index], style: const TextStyle(fontSize: 16)),
+                  child: Text(
+                    items[index],
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: onSurfaceColor, 
+                    ),
+                  ),
                 ),
               ),
             ],

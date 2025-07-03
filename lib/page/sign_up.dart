@@ -1,4 +1,4 @@
-// sign_up.dart - Updated dengan Supabase Authentication
+// lib/page/sign_up.dart - Diperbaiki untuk Dark Mode
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -42,7 +42,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
         if (response.user != null) {
           if (mounted) {
-            // Show confirmation dialog
             _showConfirmationDialog();
           }
         }
@@ -111,17 +110,16 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFFE91E63);
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
+        // Dihapus: backgroundColor dan foregroundColor agar mengikuti AppBarTheme
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back), // Warna ikon akan mengikuti tema
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
       ),
       body: Form(
         key: _formKey,
@@ -138,12 +136,16 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 8),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(fontFamily: 'Poppins', fontSize: 16, color: Colors.grey.shade600, height: 1.5),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontFamily: 'Poppins',
+                    color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
+                    height: 1.5,
+                  ),
                   children: [
                     const TextSpan(text: 'Enter your Name, Email and Password for sign up. '),
                     TextSpan(
                       text: 'Already have account?',
-                      style: const TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           Navigator.pop(context);
@@ -153,7 +155,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 48),
-
               _buildTextFormField(
                 controller: _nameController,
                 label: 'Name',
@@ -169,51 +170,45 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               const SizedBox(height: 24),
-
               _buildTextFormField(
                 controller: _emailController,
                 label: 'Email',
                 hintText: 'Enter your email',
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                  if (value == null || !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                     return 'Please enter a valid email address';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
-
               _buildTextFormField(
                 controller: _passwordController,
                 label: 'Password',
                 hintText: 'Enter your password',
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
-                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+                  icon: Icon(
+                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
                   onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
+                  if (value == null || value.length < 6) {
                     return 'Password must be at least 6 characters long';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 40),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -226,12 +221,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
               Center(
                 child: Text(
                   'By Signing up you agree to our Terms\nConditions & Privacy Policy.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade600, fontSize: 12),
+                  style: theme.textTheme.bodySmall?.copyWith(fontFamily: 'Poppins'),
                 ),
               ),
               const SizedBox(height: 20),
@@ -251,6 +245,8 @@ class _SignUpPageState extends State<SignUpPage> {
     Widget? suffixIcon,
     TextInputType? keyboardType,
   }) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -263,11 +259,17 @@ class _SignUpPageState extends State<SignUpPage> {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Poppins'),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE91E63))),
+            hintStyle: TextStyle(color: theme.hintColor, fontFamily: 'Poppins'),
+            filled: true,
+            fillColor: theme.cardColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+            ),
             suffixIcon: suffixIcon,
+            suffixIconColor: theme.iconTheme.color?.withOpacity(0.6),
           ),
         ),
       ],
