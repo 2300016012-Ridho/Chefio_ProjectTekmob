@@ -1,6 +1,7 @@
 // lib/page/recipe_detail_page.dart
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
+import 'package:chefio/services/recipe_service.dart';
 
 class RecipeDetailPage extends StatefulWidget {
   final Recipe recipe;
@@ -13,6 +14,54 @@ class RecipeDetailPage extends StatefulWidget {
 
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
   bool _isShowingIngredients = true;
+  
+  // Variabel untuk menyimpan status bookmark
+  bool _isBookmarked = false;
+  bool _isLoadingBookmark = true;
+
+  // Fungsi-fungsi untuk mengelola bookmark
+  Future<void> _checkBookmarkStatus() async {
+    if (!mounted || widget.recipe.id == null) return;
+    setState(() => _isLoadingBookmark = true);
+    try {
+      final bookmarked = await RecipeService().isBookmarked(widget.recipe.id!);
+      if (mounted) {
+        setState(() {
+          _isBookmarked = bookmarked;
+          _isLoadingBookmark = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingBookmark = false);
+    }
+  }
+
+  Future<void> _toggleBookmark() async {
+    if (_isLoadingBookmark || widget.recipe.id == null) return;
+    setState(() => _isLoadingBookmark = true);
+    try {
+      if (_isBookmarked) {
+        await RecipeService().removeBookmark(widget.recipe.id!);
+      } else {
+        await RecipeService().addBookmark(widget.recipe.id!);
+      }
+      if (mounted) setState(() => _isBookmarked = !_isBookmarked);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}'))
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingBookmark = false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBookmarkStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +90,23 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: theme.cardColor.withOpacity(0.8),
-              child: IconButton(
-                icon: Icon(Icons.bookmark_border, color: theme.iconTheme.color),
-                onPressed: () { /* Aksi simpan resep */ },
-              ),
+              // Gunakan _isLoadingBookmark untuk menampilkan spinner
+              child: _isLoadingBookmark
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : IconButton(
+                      icon: Icon(
+                        // Ganti ikon berdasarkan status _isBookmarked
+                        _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                        // Ganti warna ikon jika di-bookmark
+                        color: _isBookmarked ? theme.colorScheme.primary : theme.iconTheme.color,
+                      ),
+                      // Hubungkan ke fungsi toggle
+                      onPressed: _toggleBookmark,
+                    ),
             ),
           ),
         ],
@@ -126,8 +188,6 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           );
   }
 
-  // Widget-widget lain tidak perlu diubah, salin saja dari kode lama Anda.
-  // ... (salin _buildCookingTime, _buildToggleButtons, _buildNumberedList dari kode lama Anda)
   Widget _buildCookingTime(BuildContext context) {
     final theme = Theme.of(context);
     final Color onSurfaceColor = theme.colorScheme.onSurface;

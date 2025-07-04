@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:chefio/page/profilepage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:chefio/page/bookmark_page.dart'; 
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -25,12 +28,13 @@ class _HomePageState extends State<HomePage> {
     setState(() => _selectedIndex = index);
   }
 
+  // --- PERUBAHAN ADA DI BARIS INI ---
   List<Widget> get _widgetOptions => <Widget>[
         const HomeContent(),
-        const Center(child: Text('Bookmark Page')),
+        const BookmarkPage(), // <-- Menggunakan halaman Bookmark yang sebenarnya
         ProfilePage(onGoToHome: () => _onItemTapped(0)),
       ];
-
+  // --- AKHIR PERUBAHAN ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(

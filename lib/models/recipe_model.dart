@@ -23,7 +23,6 @@ class Recipe {
     this.category,
   });
 
-  // Factory constructor untuk membuat instance Recipe dari Map (data JSON)
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
       id: json['id'] as String?,
@@ -38,7 +37,6 @@ class Recipe {
     );
   }
 
-  // Method untuk mengonversi instance Recipe menjadi Map
   Map<String, dynamic> toJson() {
     return {
       'id': id,

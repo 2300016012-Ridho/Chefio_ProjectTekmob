@@ -10,31 +10,24 @@ class RecipeService {
   // Mengambil resep berdasarkan kategori
   Future<List<Recipe>> getRecipesByCategory(String category) async {
     try {
-      print('Fetching recipes for category: $category'); // Debug log
-      
       final response = await _supabase
           .from('recipes')
           .select()
           .eq('category', category)
           .order('created_at', ascending: false);
 
-      print('Response data: $response'); // Debug log
-
-      // Konversi List<dynamic> ke List<Recipe>
       final recipes = (response as List)
           .map((data) => Recipe.fromJson(data))
           .toList();
       
-      print('Parsed recipes count: ${recipes.length}'); // Debug log
-      
       return recipes;
     } catch (e) {
       print('Error fetching recipes: $e');
-      rethrow; // Lempar kembali error untuk ditangani di UI
+      rethrow;
     }
   }
 
-  // Mengambil semua resep (untuk debugging)
+  // --- FUNGSI YANG HILANG, SEKARANG DITAMBAHKAN KEMBALI ---
   Future<List<Recipe>> getAllRecipes() async {
     try {
       final response = await _supabase
@@ -49,11 +42,12 @@ class RecipeService {
       return recipes;
     } catch (e) {
       print('Error fetching all recipes: $e');
-      return [];
+      return []; // Mengembalikan list kosong jika ada error
     }
   }
+  // --- AKHIR FUNGSI YANG DITAMBAHKAN KEMBALI ---
 
-  // Menambah resep baru
+  // Menambah resep baru (implementasi dari kode Anda sebelumnya)
   Future<void> addRecipe({
     required Recipe recipe,
     required File imageFile,
@@ -64,23 +58,15 @@ class RecipeService {
     }
 
     try {
-      // 1. Unggah gambar ke Supabase Storage
       final imagePath = '${user.id}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      
-      print('Uploading image to path: $imagePath'); // Debug log
-      
       await _supabase.storage.from('recipeimages').upload(
             imagePath,
             imageFile,
             fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
           );
 
-      // 2. Dapatkan URL publik dari gambar yang baru diunggah
       final imageUrl = _supabase.storage.from('recipeimages').getPublicUrl(imagePath);
-      
-      print('Image URL: $imageUrl'); // Debug log
 
-      // 3. Siapkan data untuk dimasukkan ke tabel 'recipes'
       final recipeData = {
         'user_id': user.id,
         'title': recipe.title,
@@ -93,16 +79,53 @@ class RecipeService {
         'created_at': DateTime.now().toIso8601String(),
       };
 
-      print('Inserting recipe data: $recipeData'); // Debug log
-
-      // 4. Masukkan data ke tabel
-      final result = await _supabase.from('recipes').insert(recipeData).select();
-      
-      print('Insert result: $result'); // Debug log
+      await _supabase.from('recipes').insert(recipeData).select();
       
     } catch (e) {
       print('Error adding recipe: $e');
       throw Exception('Failed to add recipe. Please try again.');
+    }
+  }
+
+  // --- FUNGSI BOOKMARK (TETAP ADA) ---
+
+  Future<void> addBookmark(String recipeId) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) throw Exception('User must be logged in to bookmark a recipe.');
+    await _supabase.from('bookmarks').insert({'user_id': user.id, 'recipe_id': recipeId});
+  }
+
+  Future<void> removeBookmark(String recipeId) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) throw Exception('User must be logged in to remove a bookmark.');
+    await _supabase.from('bookmarks').delete().match({'user_id': user.id, 'recipe_id': recipeId});
+  }
+
+  Future<bool> isBookmarked(String recipeId) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return false;
+    final response = await _supabase.from('bookmarks').select('id').match({'user_id': user.id, 'recipe_id': recipeId}).limit(1);
+    return response.isNotEmpty;
+  }
+
+  Future<List<Recipe>> getBookmarkedRecipes() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return [];
+
+    try {
+      final bookmarkResponse = await _supabase.from('bookmarks').select('recipe_id').eq('user_id', user.id);
+      if (bookmarkResponse.isEmpty) return [];
+
+      final recipeIds = bookmarkResponse.map((b) => b['recipe_id'] as String).toList();
+      if (recipeIds.isEmpty) return [];
+
+      final recipeResponse = await _supabase.from('recipes').select().filter('id', 'in', recipeIds).order('created_at', ascending: false);
+
+      final recipes = (recipeResponse as List).map((data) => Recipe.fromJson(data)).toList();
+      return recipes;
+    } catch (e) {
+      print('Error fetching bookmarked recipes: $e');
+      rethrow;
     }
   }
 }

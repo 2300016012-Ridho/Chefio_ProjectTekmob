@@ -1,6 +1,6 @@
 // lib/page/debug_page.dart
-// Halaman ini untuk debugging - lihat semua resep yang ada di database
 
+import 'package:chefio/page/recipe_detail_page.dart'; // <-- PENTING: TAMBAHKAN IMPORT INI
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -47,29 +47,11 @@ class _DebugPageState extends State<DebugPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          
           if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text('Error: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _refreshData,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
-          
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No recipes found in database.'),
-            );
+            return const Center(child: Text('No recipes found.'));
           }
 
           final recipes = snapshot.data!;
@@ -78,39 +60,46 @@ class _DebugPageState extends State<DebugPage> {
             itemCount: recipes.length,
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16.0),
-                child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      recipe.imageUrl,
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 60,
-                          height: 60,
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.broken_image),
-                        );
-                      },
+              // --- PERUBAHAN DI SINI ---
+              return InkWell(
+                onTap: () {
+                  // Jika diklik, pindah ke halaman detail dengan membawa data resep
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RecipeDetailPage(recipe: recipe),
                     ),
+                  );
+                },
+                child: Card(
+                  margin: const EdgeInsets.only(bottom: 16.0),
+                  child: ListTile(
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        recipe.imageUrl,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(width: 60, height: 60, color: Colors.grey.shade300, child: const Icon(Icons.broken_image)),
+                      ),
+                    ),
+                    title: Text(recipe.title),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Category: ${recipe.category ?? 'No category'}'),
+                        Text('ID: ${recipe.id ?? 'No ID'}'),
+                        Text('User ID: ${recipe.userId ?? 'No User ID'}'),
+                        Text('Cooking Time: ${recipe.cookingTime}'),
+                      ],
+                    ),
+                    isThreeLine: true,
                   ),
-                  title: Text(recipe.title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Category: ${recipe.category ?? 'No category'}'),
-                      Text('ID: ${recipe.id ?? 'No ID'}'),
-                      Text('User ID: ${recipe.userId ?? 'No User ID'}'),
-                      Text('Cooking Time: ${recipe.cookingTime}'),
-                    ],
-                  ),
-                  isThreeLine: true,
                 ),
               );
+              // --- AKHIR PERUBAHAN ---
             },
           );
         },
