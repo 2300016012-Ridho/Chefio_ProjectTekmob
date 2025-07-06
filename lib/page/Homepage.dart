@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:chefio/page/profilepage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:chefio/page/bookmark_page.dart'; 
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 
 class HomePage extends StatefulWidget {

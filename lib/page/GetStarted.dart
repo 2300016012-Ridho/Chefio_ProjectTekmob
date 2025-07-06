@@ -11,72 +11,74 @@ class _GetStartedState extends State<GetStarted> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7A0B9),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-                      const Text(
-                        "CHEFIO",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 40.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      Image.asset(
-                        "images/loading.png",
-                        fit: BoxFit.contain,
-                        height: MediaQuery.of(context).size.height * 0.3,
-                      ),
-                      const SizedBox(height: 40),
-                      const Text(
-                        "All your favorites",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Discover the best home-style recipes\nwith step-by-step guides, anytime you crave,\nright at your fingertips",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(137, 0, 0, 0),
-                          fontSize: 15.0,
-                          fontFamily: 'Poppins',
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 1. MENGURANGI SPASI DI ATAS
+              const Spacer(flex: 1), // Diubah dari 2 menjadi 1
+
+              // Menampilkan logo (gambar + tulisan Chefio)
+              Image.asset(
+                "images/logo.png",
+                // 2. UKURAN LOGO DIPERBESAR SECARA SIGNIFIKAN
+                height: MediaQuery.of(context).size.height * 0.45, // Diubah dari 0.35 menjadi 0.45
+              ),
+
+              // 3. MENGURANGI SPASI DI ANTARA LOGO DAN TEKS
+              const Spacer(flex: 2), // Diubah dari 3 menjadi 2
+
+              // Headline
+              const Text(
+                "Where Every Recipe Tells a Story",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 21.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                  shadows: [
+                    Shadow(
+                      blurRadius: 2.0,
+                      color: Colors.black26,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
+              const SizedBox(height: 16),
+
+              // Deskripsi
+              const Text(
+                "Discover the best home-style recipes with step-by-step guides, anytime you crave, right at your fingertips",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13.0,
+                  fontFamily: 'Poppins',
+                  height: 1.5,
+                ),
+              ),
+              
+              // 4. MENGURANGI SPASI DI ANTARA TEKS DAN TOMBOL
+              const Spacer(flex: 1), // Diubah dari 2 menjadi 1
+
+              // Tombol
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    // Warna disesuaikan dengan permintaan Anda
-                    backgroundColor: const Color.fromARGB(255, 233, 30, 99),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFFF091CC),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
+                    elevation: 8,
+                    shadowColor: Colors.black.withOpacity(0.25),
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/signin');
@@ -84,16 +86,16 @@ class _GetStartedState extends State<GetStarted> {
                   child: const Text(
                     "GET STARTED",
                     style: TextStyle(
-                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      fontFamily: 'Poppins', // Tambahkan font family agar konsisten
+                      fontFamily: 'Poppins',
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              const Spacer(flex: 1),
+            ],
+          ),
         ),
       ),
     );

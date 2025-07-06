@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:chefio/page/DebugPage.dart';
 import 'package:chefio/services/theme_provider.dart';
 import 'package:chefio/page/GetStarted.dart';
 import 'package:chefio/page/Homepage.dart';
