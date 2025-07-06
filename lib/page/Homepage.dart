@@ -1,4 +1,3 @@
-// lib/page/Homepage.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:chefio/page/profilepage.dart';
@@ -27,13 +26,11 @@ class _HomePageState extends State<HomePage> {
     setState(() => _selectedIndex = index);
   }
 
-  // --- PERUBAHAN ADA DI BARIS INI ---
   List<Widget> get _widgetOptions => <Widget>[
         const HomeContent(),
-        const BookmarkPage(), // <-- Menggunakan halaman Bookmark yang sebenarnya
+        const BookmarkPage(), 
         ProfilePage(onGoToHome: () => _onItemTapped(0)),
       ];
-  // --- AKHIR PERUBAHAN ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(

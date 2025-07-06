@@ -1,5 +1,3 @@
-// page/ProfilePage.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -52,16 +50,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // --- FUNGSI INI YANG DIPERBAIKI ---
   Future<void> _signOut() async {
     try {
       await _authService.signOut();
       
-      // Setelah berhasil sign out, beri perintah untuk pindah halaman.
-      // Pastikan widget masih ada di tree (mounted) sebelum bernavigasi.
       if (mounted) {
-        // `pushNamedAndRemoveUntil` akan menghapus semua halaman sebelumnya
-        // dan menjadikan '/signin' sebagai halaman pertama.
         Navigator.pushNamedAndRemoveUntil(context, '/signin', (route) => false);
       }
     } catch (e) {
@@ -124,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   icon: Icons.logout,
                   text: 'Sign Out',
                   isSignOut: true,
-                  onTap: _signOut, // Tombol ini sekarang memanggil fungsi yang sudah diperbaiki
+                  onTap: _signOut, 
                 ),
               ],
             ),

@@ -1,5 +1,3 @@
-// page/sign_in.dart
-
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'forgot_password.dart';
@@ -76,7 +74,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(), // AppBar kosong agar tombol back muncul otomatis
+      appBar: AppBar(), 
       body: Form(
         key: _formKey,
         child: ListView(

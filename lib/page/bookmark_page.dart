@@ -1,5 +1,3 @@
-// lib/page/bookmark_page.dart
-
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
 import 'package:chefio/widgets/recipe_card.dart';
@@ -25,7 +23,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
     _bookmarkedRecipesFuture = RecipeService().getBookmarkedRecipes();
   }
 
-  // Fungsi untuk refresh data (pull-to-refresh)
   Future<void> _refreshData() async {
     setState(() {
       _loadBookmarks();
@@ -70,8 +67,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
               padding: const EdgeInsets.all(24.0),
               itemCount: recipes.length,
               itemBuilder: (context, index) {
-                // Memberi Key unik penting agar daftar bisa update dengan benar
-                // saat ada item yang dihapus dari bookmark
                 return RecipeCard(
                   key: ValueKey(recipes[index].id),
                   recipe: recipes[index]

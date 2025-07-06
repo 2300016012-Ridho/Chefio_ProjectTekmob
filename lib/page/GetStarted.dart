@@ -18,20 +18,15 @@ class _GetStartedState extends State<GetStarted> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 1. MENGURANGI SPASI DI ATAS
-              const Spacer(flex: 1), // Diubah dari 2 menjadi 1
+              const Spacer(flex: 1),
 
-              // Menampilkan logo (gambar + tulisan Chefio)
               Image.asset(
                 "images/logo.png",
-                // 2. UKURAN LOGO DIPERBESAR SECARA SIGNIFIKAN
-                height: MediaQuery.of(context).size.height * 0.45, // Diubah dari 0.35 menjadi 0.45
+                height: MediaQuery.of(context).size.height * 0.45,
               ),
 
-              // 3. MENGURANGI SPASI DI ANTARA LOGO DAN TEKS
-              const Spacer(flex: 2), // Diubah dari 3 menjadi 2
+              const Spacer(flex: 2), 
 
-              // Headline
               const Text(
                 "Where Every Recipe Tells a Story",
                 textAlign: TextAlign.center,
@@ -63,10 +58,8 @@ class _GetStartedState extends State<GetStarted> {
                 ),
               ),
               
-              // 4. MENGURANGI SPASI DI ANTARA TEKS DAN TOMBOL
-              const Spacer(flex: 1), // Diubah dari 2 menjadi 1
+              const Spacer(flex: 1), 
 
-              // Tombol
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

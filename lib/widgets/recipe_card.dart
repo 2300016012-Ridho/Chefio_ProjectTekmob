@@ -1,11 +1,8 @@
-// lib/widgets/recipe_card.dart
-
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/page/recipe_detail_page.dart';
-import 'package:chefio/services/recipe_service.dart'; // <-- PENTING: TAMBAHKAN IMPORT INI
+import 'package:chefio/services/recipe_service.dart';
 
-// 1. UBAH DARI StatelessWidget MENJADI StatefulWidget
 class RecipeCard extends StatefulWidget {
   final Recipe recipe;
 
@@ -16,7 +13,6 @@ class RecipeCard extends StatefulWidget {
 }
 
 class _RecipeCardState extends State<RecipeCard> {
-  // --- LOGIKA BOOKMARK DITAMBAHKAN DI SINI ---
   bool _isBookmarked = false;
   bool _isLoading = true;
 
@@ -28,14 +24,13 @@ class _RecipeCardState extends State<RecipeCard> {
 
   Future<void> _checkBookmarkStatus() async {
     if (!mounted || widget.recipe.id == null) return;
-    
-    // Kita tidak set isLoading di sini agar tidak ada lompatan UI
+
     try {
       final bookmarked = await RecipeService().isBookmarked(widget.recipe.id!);
       if (mounted) {
         setState(() {
           _isBookmarked = bookmarked;
-          _isLoading = false; // Set loading selesai setelah status didapat
+          _isLoading = false; 
         });
       }
     } catch (e) {
@@ -44,11 +39,9 @@ class _RecipeCardState extends State<RecipeCard> {
   }
 
   Future<void> _toggleBookmark() async {
-    // Tombol bookmarknya sendiri yang akan menangani state loading,
-    // jadi kita tidak perlu setState untuk seluruh kartu
     if (_isLoading || widget.recipe.id == null) return;
     
-    setState(() => _isLoading = true); // Tampilkan loading indicator di tombol
+    setState(() => _isLoading = true); 
 
     try {
       if (_isBookmarked) {
@@ -57,7 +50,6 @@ class _RecipeCardState extends State<RecipeCard> {
         await RecipeService().addBookmark(widget.recipe.id!);
       }
       if (mounted) {
-        // Perbarui state setelah berhasil
         setState(() => _isBookmarked = !_isBookmarked);
       }
     } catch (e) {
@@ -67,20 +59,17 @@ class _RecipeCardState extends State<RecipeCard> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false); // Sembunyikan loading
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-  // --- AKHIR DARI LOGIKA BOOKMARK ---
 
   @override
   Widget build(BuildContext context) {
-    // Kode UI Anda sepenuhnya dipertahankan, hanya dengan satu perubahan kecil
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            // Gunakan widget.recipe karena kita sekarang di dalam State class
             builder: (context) => RecipeDetailPage(recipe: widget.recipe),
           ),
         );
@@ -104,7 +93,7 @@ class _RecipeCardState extends State<RecipeCard> {
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
               child: Image.network(
-                widget.recipe.imageUrl, // Gunakan widget.recipe
+                widget.recipe.imageUrl, 
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -137,12 +126,12 @@ class _RecipeCardState extends State<RecipeCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.recipe.title, // Gunakan widget.recipe
+                    widget.recipe.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.recipe.description, // Gunakan widget.recipe
+                    widget.recipe.description, 
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
@@ -154,8 +143,7 @@ class _RecipeCardState extends State<RecipeCard> {
                       const SizedBox(width: 8),
                       Text(widget.recipe.cookingTime, style: const TextStyle(fontWeight: FontWeight.w500)),
                       const Spacer(),
-                      // --- TOMBOL BOOKMARK STATIS DIGANTI DENGAN YANG DINAMIS ---
-                      _buildBookmarkButton(), // Memanggil tombol bookmark kita yang pintar
+                      _buildBookmarkButton(), 
                     ],
                   )
                 ],
@@ -167,9 +155,7 @@ class _RecipeCardState extends State<RecipeCard> {
     );
   }
 
-  // Widget helper untuk tombol bookmark, agar kode build tetap rapi
   Widget _buildBookmarkButton() {
-    // Jika masih loading, tampilkan spinner
     if (_isLoading) {
       return const SizedBox(
         width: 24,
@@ -177,7 +163,6 @@ class _RecipeCardState extends State<RecipeCard> {
         child: CircularProgressIndicator(strokeWidth: 2),
       );
     }
-    // Jika tidak, tampilkan IconButton
     return IconButton(
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),

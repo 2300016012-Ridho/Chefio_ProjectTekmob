@@ -1,5 +1,3 @@
-// lib/page/MilkshakePage_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -18,12 +16,9 @@ class _MilkshakePageState extends State<MilkshakePage> {
   @override
   void initState() {
     super.initState();
-    // Panggil service untuk mengambil resep saat halaman dibuka
-    // PERBAIKAN: Ganti 'MilkshakePage' dengan 'MilkShake' sesuai dengan kategori yang ada
     _milkshakeRecipesFuture = RecipeService().getRecipesByCategory('MilkShake');
   }
 
-  // Method untuk refresh data
   Future<void> _refreshData() async {
     setState(() {
       _milkshakeRecipesFuture = RecipeService().getRecipesByCategory('MilkShake');
@@ -43,17 +38,14 @@ class _MilkshakePageState extends State<MilkshakePage> {
           ),
         ],
       ),
-      // Gunakan RefreshIndicator untuk pull-to-refresh
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: FutureBuilder<List<Recipe>>(
           future: _milkshakeRecipesFuture,
           builder: (context, snapshot) {
-            // State saat data sedang dimuat
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            // State jika terjadi error
             if (snapshot.hasError) {
               return Center(
                 child: Column(
@@ -71,7 +63,6 @@ class _MilkshakePageState extends State<MilkshakePage> {
                 ),
               );
             }
-            // State jika tidak ada data atau data kosong
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(
                 child: Column(
@@ -87,7 +78,6 @@ class _MilkshakePageState extends State<MilkshakePage> {
               );
             }
 
-            // State jika data berhasil didapat
             final recipes = snapshot.data!;
             return ListView.builder(
               padding: const EdgeInsets.all(24.0),

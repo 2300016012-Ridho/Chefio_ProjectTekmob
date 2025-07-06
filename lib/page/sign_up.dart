@@ -1,4 +1,3 @@
-// lib/page/sign_up.dart - Diperbaiki untuk Dark Mode
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -69,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
+              Navigator.pop(context); 
               Navigator.pushNamedAndRemoveUntil(context, '/signin', (route) => false);
             },
             child: const Text('OK'),
@@ -115,9 +114,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
     return Scaffold(
       appBar: AppBar(
-        // Dihapus: backgroundColor dan foregroundColor agar mengikuti AppBarTheme
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Warna ikon akan mengikuti tema
+          icon: const Icon(Icons.arrow_back), 
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

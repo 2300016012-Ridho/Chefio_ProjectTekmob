@@ -1,4 +1,3 @@
-// services/auth_service.dart - Fixed with missing methods
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'profile_service.dart';
 
@@ -6,22 +5,18 @@ class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
   final ProfileService _profileService = ProfileService();
 
-  // Get current user
   User? getCurrentUser() {
     return _supabase.auth.currentUser;
   }
 
-  // Add the missing currentUser getter
   User? get currentUser {
     return _supabase.auth.currentUser;
   }
 
-  // Add the missing isLoggedIn getter
   bool get isLoggedIn {
     return _supabase.auth.currentUser != null;
   }
 
-  // Sign up with profile creation
   Future<AuthResponse> signUp({
     required String email,
     required String password,
@@ -36,7 +31,6 @@ class AuthService {
         },
       );
 
-      // Create profile after successful signup
       if (response.user != null) {
         await _profileService.createOrUpdateProfile(
           userId: response.user!.id,
@@ -51,7 +45,6 @@ class AuthService {
     }
   }
 
-  // Sign in
   Future<AuthResponse> signIn({
     required String email,
     required String password,
@@ -68,7 +61,6 @@ class AuthService {
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
     try {
       await _supabase.auth.signOut();
@@ -77,7 +69,6 @@ class AuthService {
     }
   }
 
-  // Reset password - Fixed method signature
   Future<void> resetPassword({required String email}) async {
     try {
       await _supabase.auth.resetPasswordForEmail(email);
@@ -86,7 +77,6 @@ class AuthService {
     }
   }
 
-  // Listen to auth state changes
   Stream<AuthState> get authStateChanges {
     return _supabase.auth.onAuthStateChange;
   }

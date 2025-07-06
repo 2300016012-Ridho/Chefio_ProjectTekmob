@@ -1,11 +1,9 @@
-// services/profile_service.dart
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  // Get user profile data
   Future<Map<String, dynamic>> getUserProfile(String userId) async {
     try {
       final response = await _supabase
@@ -17,12 +15,10 @@ class ProfileService {
       return response;
     } catch (e) {
       print('Error getting user profile: $e');
-      // Return empty profile if not found
       return {};
     }
   }
 
-  // Create or update user profile
   Future<void> createOrUpdateProfile({
     required String userId,
     required String fullName,
@@ -48,19 +44,15 @@ class ProfileService {
     }
   }
 
-  // Upload profile image to Supabase Storage
   Future<String> uploadProfileImage(File imageFile, String userId) async {
     try {
-      // Generate unique file name
       final fileExtension = imageFile.path.split('.').last;
       final fileName = '$userId/profile_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
-      
-      // Upload to Supabase Storage
+
       await _supabase.storage
           .from('profiles')
           .upload(fileName, imageFile);
 
-      // Get public URL
       final imageUrl = _supabase.storage
           .from('profiles')
           .getPublicUrl(fileName);
@@ -71,7 +63,6 @@ class ProfileService {
     }
   }
 
-  // Update profile image URL in database
   Future<void> updateProfileImage(String userId, String imageUrl) async {
     try {
       await _supabase
@@ -83,10 +74,8 @@ class ProfileService {
     }
   }
 
-  // Delete old profile image from storage
   Future<void> deleteProfileImage(String imageUrl) async {
     try {
-      // Extract file path from URL
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
       final fileName = pathSegments.skip(pathSegments.indexOf('profiles') + 1).join('/');
@@ -96,7 +85,6 @@ class ProfileService {
           .remove([fileName]);
     } catch (e) {
       print('Error deleting old profile image: $e');
-      // Don't throw error as this is not critical
     }
   }
 }

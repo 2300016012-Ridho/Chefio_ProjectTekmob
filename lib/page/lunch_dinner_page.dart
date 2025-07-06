@@ -1,5 +1,3 @@
-// lib/page/lunch_dinner_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -18,12 +16,9 @@ class _LunchDinnerPageState extends State<LunchDinnerPage> {
   @override
   void initState() {
     super.initState();
-    // Panggil service untuk mengambil resep saat halaman dibuka
-    // PERBAIKAN: Ganti 'LunchDinnerPaget' dengan 'Lunch & Dinner' sesuai dengan kategori yang ada di AddRecipe
     _lunchDinnerRecipesFuture = RecipeService().getRecipesByCategory('Lunch & Dinner');
   }
 
-  // Method untuk refresh data
   Future<void> _refreshData() async {
     setState(() {
       _lunchDinnerRecipesFuture = RecipeService().getRecipesByCategory('Lunch & Dinner');
@@ -43,17 +38,14 @@ class _LunchDinnerPageState extends State<LunchDinnerPage> {
           ),
         ],
       ),
-      // Gunakan RefreshIndicator untuk pull-to-refresh
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: FutureBuilder<List<Recipe>>(
           future: _lunchDinnerRecipesFuture,
           builder: (context, snapshot) {
-            // State saat data sedang dimuat
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            // State jika terjadi error
             if (snapshot.hasError) {
               return Center(
                 child: Column(
@@ -71,7 +63,6 @@ class _LunchDinnerPageState extends State<LunchDinnerPage> {
                 ),
               );
             }
-            // State jika tidak ada data atau data kosong
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(
                 child: Column(
@@ -87,7 +78,6 @@ class _LunchDinnerPageState extends State<LunchDinnerPage> {
               );
             }
 
-            // State jika data berhasil didapat
             final recipes = snapshot.data!;
             return ListView.builder(
               padding: const EdgeInsets.all(24.0),

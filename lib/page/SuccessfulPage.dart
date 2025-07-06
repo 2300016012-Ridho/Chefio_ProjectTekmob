@@ -1,4 +1,3 @@
-// lib/page/SuccessfulPage.dart
 import 'package:flutter/material.dart';
 
 class SuccessfulPage extends StatelessWidget {

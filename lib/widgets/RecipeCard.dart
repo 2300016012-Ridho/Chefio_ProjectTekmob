@@ -1,5 +1,3 @@
-// lib/widgets/recipe_card.dart
-
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +91,6 @@ class _RecipeCardState extends State<RecipeCard> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            // Menggunakan recipe.imageUrl dari model Anda
             child: Image.network(
               widget.recipe.imageUrl,
               height: 150,
@@ -115,7 +112,6 @@ class _RecipeCardState extends State<RecipeCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Menggunakan recipe.title dari model Anda
                       Text(
                         widget.recipe.title,
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -123,7 +119,6 @@ class _RecipeCardState extends State<RecipeCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Menggunakan recipe.category dan recipe.cookingTime dari model Anda
                       Text(
                         '${widget.recipe.category ?? 'General'} • ${widget.recipe.cookingTime}',
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 14),

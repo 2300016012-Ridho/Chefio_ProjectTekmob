@@ -1,4 +1,3 @@
-// lib/page/recipe_detail_page.dart
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -15,11 +14,9 @@ class RecipeDetailPage extends StatefulWidget {
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
   bool _isShowingIngredients = true;
   
-  // Variabel untuk menyimpan status bookmark
   bool _isBookmarked = false;
   bool _isLoadingBookmark = true;
 
-  // Fungsi-fungsi untuk mengelola bookmark
   Future<void> _checkBookmarkStatus() async {
     if (!mounted || widget.recipe.id == null) return;
     setState(() => _isLoadingBookmark = true);
@@ -69,10 +66,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     final Color onSurfaceColor = theme.colorScheme.onSurface;
 
     return Scaffold(
-      // PENTING: extendBodyBehindAppBar membuat body bisa digambar di belakang AppBar
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // AppBar dibuat transparan
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
@@ -90,7 +85,6 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: theme.cardColor.withOpacity(0.8),
-              // Gunakan _isLoadingBookmark untuk menampilkan spinner
               child: _isLoadingBookmark
                   ? const SizedBox(
                       width: 20,
@@ -99,12 +93,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                     )
                   : IconButton(
                       icon: Icon(
-                        // Ganti ikon berdasarkan status _isBookmarked
                         _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        // Ganti warna ikon jika di-bookmark
                         color: _isBookmarked ? theme.colorScheme.primary : theme.iconTheme.color,
                       ),
-                      // Hubungkan ke fungsi toggle
                       onPressed: _toggleBookmark,
                     ),
             ),
@@ -115,7 +106,6 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Widget gambar tidak perlu lagi ada tombol di dalamnya
             _buildImage(context),
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -154,17 +144,15 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     );
   }
 
-  // Widget ini sekarang hanya menampilkan gambar
   Widget _buildImage(BuildContext context) {
     final theme = Theme.of(context);
-    // Cek apakah imageUrl berasal dari internet atau asset lokal
     final isNetworkImage = widget.recipe.imageUrl.startsWith('http');
 
     return isNetworkImage
         ? Image.network(
             widget.recipe.imageUrl,
             width: double.infinity,
-            height: 350, // Sedikit lebih tinggi agar ada ruang untuk AppBar
+            height: 350, 
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Container(
               height: 350,
@@ -180,7 +168,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
               );
             },
           )
-        : Image.asset( // Fallback untuk gambar lokal
+        : Image.asset( 
             widget.recipe.imageUrl,
             width: double.infinity,
             height: 350,

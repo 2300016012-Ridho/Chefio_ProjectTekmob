@@ -1,5 +1,3 @@
-// lib/services/recipe_service.dart
-
 import 'dart:io';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class RecipeService {
   final _supabase = Supabase.instance.client;
 
-  // Mengambil resep berdasarkan kategori
   Future<List<Recipe>> getRecipesByCategory(String category) async {
     try {
       final response = await _supabase
@@ -27,7 +24,6 @@ class RecipeService {
     }
   }
 
-  // --- FUNGSI YANG HILANG, SEKARANG DITAMBAHKAN KEMBALI ---
   Future<List<Recipe>> getAllRecipes() async {
     try {
       final response = await _supabase
@@ -42,12 +38,10 @@ class RecipeService {
       return recipes;
     } catch (e) {
       print('Error fetching all recipes: $e');
-      return []; // Mengembalikan list kosong jika ada error
+      return [];
     }
   }
-  // --- AKHIR FUNGSI YANG DITAMBAHKAN KEMBALI ---
 
-  // Menambah resep baru (implementasi dari kode Anda sebelumnya)
   Future<void> addRecipe({
     required Recipe recipe,
     required File imageFile,
@@ -87,7 +81,6 @@ class RecipeService {
     }
   }
 
-  // --- FUNGSI BOOKMARK (TETAP ADA) ---
 
   Future<void> addBookmark(String recipeId) async {
     final user = _supabase.auth.currentUser;

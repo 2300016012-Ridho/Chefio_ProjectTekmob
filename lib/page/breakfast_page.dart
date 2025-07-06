@@ -1,8 +1,6 @@
-// page/breakfast_page.dart
-
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
-import 'package:chefio/widgets/recipe_card.dart'; // Asumsi Anda punya widget ini
+import 'package:chefio/widgets/recipe_card.dart'; 
 import 'package:flutter/material.dart';
 
 class BreakfastPage extends StatefulWidget {
@@ -69,8 +67,6 @@ class _BreakfastPageState extends State<BreakfastPage> {
               padding: const EdgeInsets.all(24.0),
               itemCount: recipes.length,
               itemBuilder: (context, index) {
-                // Gunakan RecipeCard jika ada, jika tidak, gunakan _buildRecipeCard
-                // Untuk konsistensi, lebih baik menggunakan RecipeCard
                 return RecipeCard(recipe: recipes[index]);
               },
             );

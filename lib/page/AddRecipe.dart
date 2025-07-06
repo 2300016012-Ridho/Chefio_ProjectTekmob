@@ -1,5 +1,3 @@
-// lib/page/AddRecipe.dart
-
 import 'dart:io';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -19,7 +17,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
   final _descriptionController = TextEditingController();
   
   File? _image;
-  int _servingCount = 2; // Tidak ada di model, anggap saja ini info tambahan
+  int _servingCount = 2; 
   int _timeInMinutes = 0;
   String? _selectedCategory;
 
@@ -85,7 +83,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recipe added successfully!'), backgroundColor: Colors.green));
-        Navigator.pop(context, true); // Kembali dan beri sinyal sukses
+        Navigator.pop(context, true); 
       }
     } catch (e) {
       if (mounted) {
@@ -148,7 +146,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                   const SizedBox(height: 40),
 
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _saveRecipe, // Panggil fungsi save
+                    onPressed: _isLoading ? null : _saveRecipe, 
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -172,9 +170,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
       ),
     );
   }
-
-  // --- Widget-widget pembantu (tidak ada perubahan besar di sini) ---
-  // ... salin semua widget _build... dari kode asli Anda ...
+  
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),

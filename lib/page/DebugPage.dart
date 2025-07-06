@@ -1,6 +1,4 @@
-// lib/page/debug_page.dart
-
-import 'package:chefio/page/recipe_detail_page.dart'; // <-- PENTING: TAMBAHKAN IMPORT INI
+import 'package:chefio/page/recipe_detail_page.dart'; 
 import 'package:flutter/material.dart';
 import 'package:chefio/models/recipe_model.dart';
 import 'package:chefio/services/recipe_service.dart';
@@ -60,10 +58,8 @@ class _DebugPageState extends State<DebugPage> {
             itemCount: recipes.length,
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              // --- PERUBAHAN DI SINI ---
               return InkWell(
                 onTap: () {
-                  // Jika diklik, pindah ke halaman detail dengan membawa data resep
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -99,7 +95,6 @@ class _DebugPageState extends State<DebugPage> {
                   ),
                 ),
               );
-              // --- AKHIR PERUBAHAN ---
             },
           );
         },
