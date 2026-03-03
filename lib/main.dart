@@ -17,8 +17,8 @@ import 'package:chefio/page/dessert_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: "https://gmnlzpixswdpdlcfnqbp.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtbmx6cGl4c3dkcGRsY2ZucWJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NDkyOTEsImV4cCI6MjA2NjUyNTI5MX0.ecQOXNHh2r_KGbKal4mGn1OvBDox3wMTvW_yRQJqKLg",
+    url: "https://cwkgrvnnnreiqjbmwvni.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a2dydm5ubnJlaXFqYm13dm5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzNTgxMTIsImV4cCI6MjA4NzkzNDExMn0.NwVXsu2XzlXpbxKr9kIJI9yni6vmhu_MO3Nf7u1XLkU",
   );
   runApp(
     ChangeNotifierProvider(
